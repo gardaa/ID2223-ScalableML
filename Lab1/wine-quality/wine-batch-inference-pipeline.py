@@ -39,7 +39,7 @@ def g():
     y_pred = model.predict(batch_data)
     offset = 1
     quality = y_pred[y_pred.size-offset]
-    wine_url = "https://raw.githubusercontent.com/gardaa/lab1-wine-quality/main/wine_images/" + str(quality) + ".jpg"
+    wine_url = "https://raw.githubusercontent.com/gardaa/ID2223-ScalableML/main/Lab1/wine-quality/wine_images/" + str(quality) + ".jpg"
 
     # Save and upload image (overwrite it) for monitoring
     print("Wine predicted: " + str(quality))
@@ -52,7 +52,7 @@ def g():
     wine_fg = fs.get_feature_group(name="wine", version=1)
     df = wine_fg.read() 
     label = df.iloc[-offset]["quality"]
-    label_url = "https://raw.githubusercontent.com/gardaa/lab1-wine-quality/main/wine_images/" + str(int(label)) + ".jpg"
+    label_url = "https://raw.githubusercontent.com/gardaa/ID2223-ScalableML/main/Lab1/wine-quality/wine_images/" + str(quality) + ".jpg"
     print("Actual quality: " + str(label))
     img = Image.open(requests.get(label_url, stream=True).raw)            
     img.save("./actual_quality.jpg")
