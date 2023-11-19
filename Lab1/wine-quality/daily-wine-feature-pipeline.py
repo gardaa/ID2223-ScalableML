@@ -1,4 +1,5 @@
 import os
+import random
 import modal
 import hopsworks
 
@@ -13,17 +14,17 @@ if LOCAL == False:
         g()
 
 # Generate a synthetic wine using random values between a min and max range
-def generate_wine(type_min, type_max, fixed_acidity_min, fixed_acidity_max,
+def generate_wine(quality, type_min, type_max, fixed_acidity_min, fixed_acidity_max,
                   volatile_acidity_min, volatile_acidity_max, citric_acid_min, citric_acid_max, 
                   residual_sugar_min, residual_sugar_max, chlorides_min, chlorides_max, 
                   free_sulfur_dioxide_min, free_sulfur_dioxide_max, total_sulfur_dioxide_min, 
                   total_sulfur_dioxide_max, density_min, density_max, ph_min, ph_max, 
-                  sulphates_min, sulphates_max, alcohol_min, alcohol_max, quality_min, quality_max):
+                  sulphates_min, sulphates_max, alcohol_min, alcohol_max):
     
     import pandas as pd
     import random
 
-    return pd.DataFrame({
+    wine_df = pd.DataFrame({
         "type": [random.randint(type_min, type_max)],
         "fixed_acidity": [random.uniform(fixed_acidity_min, fixed_acidity_max)],
         "volatile_acidity": [random.uniform(volatile_acidity_min, volatile_acidity_max)],
@@ -35,13 +36,17 @@ def generate_wine(type_min, type_max, fixed_acidity_min, fixed_acidity_max,
         "density": [random.uniform(density_min, density_max)],
         "ph": [random.uniform(ph_min, ph_max)],
         "sulphates": [random.uniform(sulphates_min, sulphates_max)],
-        "alcohol": [random.uniform(alcohol_min, alcohol_max)],
-        "quality": [random.randint(quality_min, quality_max)]
+        "alcohol": [random.uniform(alcohol_min, alcohol_max)]
+        #"quality": [random.randint(quality_min, quality_max)]
     })
+
+    wine_df['quality'] = int(quality)
+    return wine_df
 
 # Generate random flower with the min values and max values for each column as the boundries
 def get_random_wine():
-    wine = generate_wine(0,1,3.8,15.9,0.08,1.58,0,1.66,0.6,65.8,0.009,0.611,1,289,6,440,0.987110,1.038980,2.72,4.01,0.22,2,8,14.9,3,9)
+    quality = random.uniform(3,8)
+    wine = generate_wine(quality,0,1,3.8,15.9,0.08,1.58,0,1.66,0.6,65.8,0.009,0.611,1,289,6,440,0.987110,1.038980,2.72,4.01,0.22,2,8,14.9)
     print("Wine added")
     print(wine)
     return wine

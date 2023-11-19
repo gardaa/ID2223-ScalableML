@@ -1,4 +1,5 @@
 import os
+import random
 import modal
     
 LOCAL=True
@@ -28,7 +29,7 @@ def g():
     
     # Get model and directory from Hopsworks
     mr = project.get_model_registry()
-    model = mr.get_model("wine_model_rf", version=1)
+    model = mr.get_model("wine_model_rf", version=4)
     model_dir = model.download()
     model = joblib.load(model_dir + "/wine_model_rf.pkl")
     
@@ -37,7 +38,8 @@ def g():
     
     # Predict the wine quality with our model and find the correct picture for it
     y_pred = model.predict(batch_data)
-    offset = 1
+    #offset = 1
+    offset =  random.randint(1, y_pred.size)
     quality = y_pred[y_pred.size-offset]
     wine_url = "https://raw.githubusercontent.com/gardaa/ID2223-ScalableML/main/Lab1/wine-quality/wine_images/" + str(quality) + ".jpg"
 
@@ -52,7 +54,7 @@ def g():
     wine_fg = fs.get_feature_group(name="wine", version=1)
     df = wine_fg.read() 
     label = df.iloc[-offset]["quality"]
-    label_url = "https://raw.githubusercontent.com/gardaa/ID2223-ScalableML/main/Lab1/wine-quality/wine_images/" + str(quality) + ".jpg"
+    label_url = "https://raw.githubusercontent.com/gardaa/ID2223-ScalableML/main/Lab1/wine-quality/wine_images/" + str(int(label)) + ".jpg"
     print("Actual quality: " + str(label))
     img = Image.open(requests.get(label_url, stream=True).raw)            
     img.save("./actual_quality.jpg")
