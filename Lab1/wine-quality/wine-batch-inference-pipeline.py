@@ -92,7 +92,7 @@ def g():
     if predictions.value_counts().count() == 7:
         results = confusion_matrix(labels, predictions)
     
-        df_cm = pd.DataFrame(results, range(3,9), range(3,9))
+        df_cm = pd.DataFrame(results, range(3,10), range(3,10))
     
         cm = sns.heatmap(df_cm, annot=True)
         fig = cm.get_figure()
