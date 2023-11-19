@@ -10,7 +10,7 @@ The dataset used to train model:
 The model predicts which flower it is between Setosa, and , based on sepal_length, sepal_width, petal_length and petal_width. The model to predict it is trained using the K-nearest-neighbors algorithm.
 
 ## Wine Quality Prediction
-Link to folder:
+Link to folder: [Wine Quality](https://github.com/gardaa/ID2223-ScalableML/tree/main/Lab1/wine-quality)
 
 The dataset used to train model:
 
