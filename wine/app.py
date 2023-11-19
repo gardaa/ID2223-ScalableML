@@ -27,8 +27,9 @@ def wine(type, fixed_acidity, volatile_acidity, citric_acid, residual_sugar, chl
     # A list of predictions returned as a label
     result = model.predict(wine_df)
     print(result)
-
-    return result
+    wine_url = "https://raw.githubusercontent.com/gardaa/lab1-wine-quality/main/wine_images/" + str(result[0]) + ".jpg"
+    wine_image = Image.open(requests.get(wine_url, stream=True).raw)
+    return wine_image
 
 demo = gr.Interface(
     fn=wine,
@@ -49,6 +50,6 @@ demo = gr.Interface(
         gr.inputs.Number(default=0, label="Sulphates"),
         gr.inputs.Number(default=0, label="Alcohol"),
     ],
-    outputs=gr.Textbox(type="text"))
+    outputs=gr.Image(type="pil"))
 
-demo.launch(debug=True)
+demo.launch(debug=True, share=True)

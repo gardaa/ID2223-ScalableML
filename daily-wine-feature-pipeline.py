@@ -43,6 +43,7 @@ def generate_wine(type_min, type_max, fixed_acidity_min, fixed_acidity_max,
 def get_random_wine():
     wine = generate_wine(0,1,3.8,15.9,0.08,1.58,0,1.66,0.6,65.8,0.009,0.611,1,289,6,440,0.987110,1.038980,2.72,4.01,0.22,2,8,14.9,3,9)
     print("Wine added")
+    print(wine)
     return wine
 
 # Log in to Hopsworks, get feature store and insert the new synthtic wine into the feature store
