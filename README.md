@@ -7,7 +7,7 @@ Link to folder: [Iris Flower](https://github.com/gardaa/ID2223-ScalableML/tree/m
 
 The dataset used to train model: [Dataset](https://repo.hops.works/master/hopsworks-tutorials/data/iris.csv)
 
-The model predicts which flower it is between Setosa, and , based on sepal_length, sepal_width, petal_length and petal_width. The model to predict it is trained using the K-nearest-neighbors algorithm.
+The model predicts which flower it is between Setosa, Virginica or Versicolor based on sepal_length, sepal_width, petal_length and petal_width. The model to predict it is trained using the K-nearest-neighbors algorithm.
 
 ## [Task 2 - Wine Quality](Lab1/wine-quality/README.md)
 Link to folder: [Wine Quality](https://github.com/gardaa/ID2223-ScalableML/tree/main/Lab1/wine-quality)
