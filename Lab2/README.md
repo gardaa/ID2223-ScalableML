@@ -1,11 +1,12 @@
-# Task 1: Fine tuning Whisper model for the Danish language
-This is the dataset that has been used to make this project: [dataset](https://huggingface.co/datasets/mozilla-foundation/common_voice_11_0/viewer/da)
+# Task 1: Fine tuning Whisper model for the Norwegian language
+This is the dataset that has been used to make this project: [dataset](https://huggingface.co/datasets/google/fleurs). You can not see a preview of the dataset, so you have to load the norwegian dataset to see it. 
 
 ## Files and description
-The project consists of 3 different files:
+
+<!-- The project consists of 3 different files:
 - Danish-feature-pipeline.ipynb: This file prepares the environment, links the notebook to the Hugging Face Hub, loads the dataset abd prepares the feature extractor, tokenizer and data.
 - Danish-training-pipeline.ipynb: This file defines a data collator, the evaluation metrics, defines the training configuration, and last but not least trains the model.
-- Danish-interference-pipeline.py: This file builds a demo that allows the user to record a sound bite with their microphone or upload a sound file to transcribe to text. The UI also shows the output.
+- Danish-interference-pipeline.py: This file builds a demo that allows the user to record a sound bite with their microphone or upload a sound file to transcribe to text. The UI also shows the output. -->
 
 # Task 2: Improve pipeline scalability and model performance
 ## How to improve model performance
@@ -15,3 +16,12 @@ model performance are using
 fine-tuning model architecture, etc
 (b) data-centric approach - identify new data sources that enable you to
 train a better model that one provided in the blog post -->
+There are two different approaches to improve the performance: 
+- **Model centric**
+- **Data centric**
+
+The model centric approach means that we change the code of the training pipeline, which results in a (hopefully) better trained model, which gives a better WER score. To achieve this, some changes might be: 
+- Use a different pre-trained whisper model. In the tutorial, we use a small whisper model, but we can also use a medium or large model. 
+- Tune the hyperparameters, such as the learning rate, batch size, dropout and number of epochs. 
+
+The data centric approach implies that we keep the training pipeline as it is, but we find a new source of data (dataset), to train the data on. Usually, this means a bigger and better dataset, which gives the training pipeline more data to train the model on, which would make it more accurate and give it better performance. 
