@@ -1,0 +1,9 @@
+ffmpeg
+datasets>=2.6.1
+git+https://github.com/huggingface/transformers
+librosa
+evaluate>=0.3.0
+jiwer
+gradio
+-U accelerate
+-U transformers

@@ -25,3 +25,6 @@ The model centric approach means that we change the code of the training pipelin
 - Tune the hyperparameters, such as the learning rate, batch size, dropout and number of epochs. 
 
 The data centric approach implies that we keep the training pipeline as it is, but we find a new source of data (dataset), to train the data on. Usually, this means a bigger and better dataset, which gives the training pipeline more data to train the model on, which would make it more accurate and give it better performance. 
+
+### Our Choice
+We decided that the best approach for us would be to improve the model using a data centric approach. The reason is that the dataset in the original model was relatively small (ca. 3.9k entries for training/validation set and 500 entries for test set). Therefore, providing a bigger and better dataset would allow the model to be trained better. [This](https://huggingface.co/datasets/NbAiLab/NPSC) is the new dataset we used, which had a total of 56k entries for Norwegian Bokmål. However, we chose to downscale it to 15,6k (35% of the dataset) entries for the training set and 3,5k (65% of the test set) for the test set, as we felt like that was enough of an upgrade from the previous model's 3,9k.
