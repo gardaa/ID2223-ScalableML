@@ -1,7 +1,8 @@
 # Task 1: Fine tuning Whisper model for the Norwegian language
-This is the dataset that has been used to make this project: [dataset](https://huggingface.co/datasets/google/fleurs). You can not see a preview of the dataset, so you have to load the norwegian dataset to see it. 
+This is the dataset that has been used to make this project: [dataset](https://huggingface.co/datasets/google/fleurs). You can not see a preview of the dataset, so you have to load the norwegian dataset to see it.
 
 ## Files and description
+The batch_inference.py (hosting) file is in its own file, while the pipelines for feature engineering and training is in a Whisper_Norwegian_1.ipynb file. 
 
 <!-- The project consists of 3 different files:
 - Danish-feature-pipeline.ipynb: This file prepares the environment, links the notebook to the Hugging Face Hub, loads the dataset abd prepares the feature extractor, tokenizer and data.
@@ -28,3 +29,6 @@ The data centric approach implies that we keep the training pipeline as it is, b
 
 ### Our Choice
 We decided that the best approach for us would be to improve the model using a data centric approach. The reason is that the dataset in the original model was relatively small (ca. 3.9k entries for training/validation set and 500 entries for test set). Therefore, providing a bigger and better dataset would allow the model to be trained better. [This](https://huggingface.co/datasets/NbAiLab/NPSC) is the new dataset we used, which had a total of 56k entries for Norwegian Bokmål. However, we chose to downscale it to 15,6k (35% of the dataset) entries for the training set and 3,5k (65% of the test set) for the test set, as we felt like that was enough of an upgrade from the previous model's 3,9k.
+
+## Files and description
+The project is split into three different files: feature_engineering_pipeline.py which prepares the data, training_pipeline.py which trains the model and batch_inference_pipeline.py which hosts the model in a gradio environment, where the user can either speak into their microphone or upload an audio file, and it will be written in Norwegian. 
