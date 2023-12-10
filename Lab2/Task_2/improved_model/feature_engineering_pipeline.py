@@ -4,13 +4,17 @@ from transformers import WhisperFeatureExtractor
 from transformers import WhisperTokenizer
 from transformers import WhisperProcessor
 
+# repo = huggingface_hub.Repository(local_dir="cloned_model_repo", clone_from = "gardaa/ASR")
+
+# repo.git_pull()
+
 huggingface_hub.login(token="PLACE TOKEN HERE")
 
 data = DatasetDict()
 
 # Only load 35% of the training data and 65% of the test data
-data["train"] = load_dataset("NbAiLab/NPSC", "16K_mp3_bokmaal", split="train[:15%]", use_auth_token=True)
-data["test"] = load_dataset("NbAiLab/NPSC", "16K_mp3_bokmaal", split="test[:18%]", use_auth_token=True)
+data["train"] = load_dataset("NbAiLab/NPSC", "16K_mp3_bokmaal", split="train[:12%]", use_auth_token=True)
+data["test"] = load_dataset("NbAiLab/NPSC", "16K_mp3_bokmaal", split="test[:17%]", use_auth_token=True)
 
 print(data)
 

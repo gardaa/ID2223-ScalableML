@@ -69,13 +69,14 @@ def compute_metrics(pred):
 model = WhisperForConditionalGeneration.from_pretrained("openai/whisper-small")
 
 model.config.forced_decoder_ids = None
+model.config.dropout = 0.1
 model.config.suppress_tokens = []
 
 training_args = Seq2SeqTrainingArguments(
     output_dir="./whisper-small-norwegian-improved-model",  # change to a repo name of your choice
-    per_device_train_batch_size=16,
-    gradient_accumulation_steps=1,  # increase by 2x for every 2x decrease in batch size
-    learning_rate=1e-5,
+    per_device_train_batch_size=8,
+    gradient_accumulation_steps=2,  # increase by 2x for every 2x decrease in batch size
+    learning_rate=1e-6,
     warmup_steps=500,
     max_steps=4000,
     gradient_checkpointing=True,
@@ -84,8 +85,8 @@ training_args = Seq2SeqTrainingArguments(
     per_device_eval_batch_size=8,
     predict_with_generate=True,
     generation_max_length=225,
-    save_steps=1000,
-    eval_steps=1000,
+    save_steps=500,
+    eval_steps=500,
     logging_steps=25,
     report_to=["tensorboard"],
     load_best_model_at_end=True,
