@@ -17,5 +17,5 @@ The dataset used to train model: [Dataset](https://raw.githubusercontent.com/ID2
 The model predicts the quality of a wine between 3-9 based on type, fixed acidity, volatile acidity, citric acid, residual sugar, chlorides, free sulfur dioxide, total sulfur dioxide, density, pH, sulphates and alcohol. 
 The model to predict it is trained using the RandomForest algorithm.
 
-# Lab 2
+# [Lab 2](https://github.com/gardaa/ID2223-ScalableML/blob/main/Lab2/README.md)
 This lab is also split into two different tasks. The first task involves fine tuning an existing automatic speech recognition (ASR) model, Whisper, into handling Norwegian. We have followed [this](https://huggingface.co/blog/fine-tune-whisper) blog post. The second tasks involves improving the model using a model centric and/or data centric approach. 
