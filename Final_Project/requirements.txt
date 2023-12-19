@@ -1,3 +1,5 @@
 pandas 
 schedule 
 requests
+hopsworks
+matplotlib.pyplot
