@@ -1,7 +1,7 @@
 from transformers import pipeline
 import gradio as gr
 
-pipe = pipeline(model="gardaa/whisper-small-norwegian-improved-model")  # change to "your-username/the-name-you-picked"
+pipe = pipeline(model="gardaa/whisper-small-norwegian-improved-model-2")  # change to "your-username/the-name-you-picked"
 
 def transcribe(audio):
     text = pipe(audio)["text"]

@@ -13,8 +13,8 @@ huggingface_hub.login(token="PLACE TOKEN HERE")
 data = DatasetDict()
 
 # Only load 35% of the training data and 65% of the test data
-data["train"] = load_dataset("NbAiLab/NPSC", "16K_mp3_bokmaal", split="train[:12%]", use_auth_token=True)
-data["test"] = load_dataset("NbAiLab/NPSC", "16K_mp3_bokmaal", split="test[:17%]", use_auth_token=True)
+data["train"] = load_dataset("NbAiLab/NPSC", "16K_mp3_bokmaal", split="train[:23%]", use_auth_token=True)
+data["test"] = load_dataset("NbAiLab/NPSC", "16K_mp3_bokmaal", split="test[:30%]", use_auth_token=True)
 
 print(data)
 
