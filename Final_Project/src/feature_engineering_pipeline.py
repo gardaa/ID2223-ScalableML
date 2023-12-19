@@ -6,7 +6,7 @@ HOPSWORKS_API_KEY = "PLACE API KEY HERE"
 project = hopsworks.login(HOPSWORKS_API_KEY)
 fs = project.get_feature_store()
 
-icelandic_house_prices_df = pd.read_csv('data/icelandic_house_prices.csv')
+icelandic_house_prices_df = pd.read_csv('../data/kaupskra.csv')
 
 ##### EXPLORATORY DATA ANALYSIS (EDA) #####
 

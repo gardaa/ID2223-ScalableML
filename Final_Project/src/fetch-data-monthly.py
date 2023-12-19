@@ -1,6 +1,7 @@
 import pandas as pd
 import requests
 from datetime import datetime
+from io import StringIO 
 import schedule
 import time
 
@@ -13,10 +14,10 @@ def fetch_update_csv():
     
     if response.status_code == 200:
         # Load the CSV data into a DataFrame
-        df = pd.read_csv(pd.compat.StringIO(response.text))
+        df = pd.read_csv(StringIO(response.text))
 
         # Save the DataFrame to a local CSV file
-        local_file_path = 'Final_Project\data\kaupskra.csv'
+        local_file_path = '../data/kaupskra.csv'
         df.to_csv(local_file_path, index=False)
 
         print(f"CSV file updated successfully at {datetime.now()}")
@@ -25,9 +26,11 @@ def fetch_update_csv():
         print(f"Failed to fetch CSV data. Status code: {response.status_code}")
 
 # Schedule the task to run every 23rd of the month
-schedule.every().month.day.at("00:00").do(fetch_update_csv)
+# schedule.every().month.day.at("00:00").do(fetch_update_csv)
 
 # Keep the script running to execute scheduled tasks
-while True:
-    schedule.run_pending()
-    time.sleep(1)
+# while True:
+#     schedule.run_pending()
+#     time.sleep(1)
+
+fetch_update_csv()
