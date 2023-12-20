@@ -5,17 +5,23 @@ import matplotlib.pyplot as plt
 
 # Login to Hopsworks and get the feature store handle
 def hopsworks_login_and_upload(df):
-    HOPSWORKS_API_KEY = "zB1HFw6waUQEsgoH.zTP79bPsYXZzR1hZN8L5lF7NJmgIJNR6ji7r4HenjkeeSel2MVi6Ca61AbrzGOy8"
+    HOPSWORKS_API_KEY = "PLACE API KEY HERE"
     project = hopsworks.login(api_key_value=HOPSWORKS_API_KEY)
     fs = project.get_feature_store()
-    icelandic_house_price_fg = fs.get_or_create_feature_group(
-        name="Icelandic house prices",
-        version=1,
-        primary_key=["POSTALCODE","PRICE","YEAR","AREA","ROOMS","TYPE"],
-        description="Icelandic house price dataset"
-    )
+    try:
+        icelandic_house_price_fg = fs.get_or_create_feature_group(
+            name="icelandic_house_prices",
+            version=1,
+            primary_key=["postalcode", "price", "year", "area", "rooms", "type"],
+            description="icelandic house price dataset"
+        )
 
-    icelandic_house_price_fg.insert(df)
+        icelandic_house_price_fg.insert(df)
+
+        print("Feature group created/loaded and data inserted successfully")
+
+    except Exception as e:
+        print("Error:", e)
 
 def display_data(df):
     display(df)
@@ -34,19 +40,20 @@ def feature_extraction(df):
 
 def translate_columns(df):
     column_mapping = {
-        'POSTNR': 'POSTALCODE',
-        'UTGDAG': 'DATE',
-        'KAUPVERD': 'PRICE',
-        'BYGGAR': 'YEAR',
-        'EINFLM': 'AREA',
-        'FJHERB': 'ROOMS',
-        'TEGUND': 'TYPE',
-        'FULLBUID': 'COMPLETE'
+        'POSTNR': 'postalcode',
+        'UTGDAG': 'date',
+        'KAUPVERD': 'price',
+        'BYGGAR': 'year',
+        'EINFLM': 'area',
+        'FJHERB': 'rooms',
+        'TEGUND': 'type',
+        'FULLBUID': 'complete'
     }
     
     df.rename(columns=column_mapping, inplace=True)
 
     translate_type(df)
+
 
     return df
 
@@ -57,7 +64,8 @@ def translate_type(df):
         'Einbýli': 2 # House
     }
 
-    df['TYPE'] = df['TYPE'].replace(value_mapping)
+    df['type'] = df['type'].replace(value_mapping)
+
     return df
 
 def data_cleaning(df):
@@ -74,19 +82,25 @@ def data_cleaning(df):
 # 8. Filter out price larger than 500 million or less than 7 million
     df = filter_outliers(df)
 # Drop DATE and COMPLETE column
-    df = df.drop(['COMPLETE','DATE'], axis=1)
+    df = df.drop(['complete','date'], axis=1)
 # PRICE is in 1000s, at some point must multiply column by 1000
-    df['PRICE'] = df['PRICE'] * 1000
-# ROOMS is a double, consider changing to int
-    df['ROOMS'] = df['ROOMS'].astype(int)
+    df['price'] = df['price'] * 1000
+# Change all columns to int to fix error
+    df['rooms'] = df['rooms'].astype(int)
+    df['type'] = df['type'].astype(int)
+    df['postalcode'] = df['postalcode'].astype(int)
+    df['year'] = df['year'].astype(int)
+    df['area'] = df['area'].astype(int)
+    df['price'] = df['price'].astype(int)
+
     return df
 
 def filter_by_date(df):
     # Convert 'DATE' column to datetime
-    df['DATE'] = pd.to_datetime(df['DATE'])
+    df['date'] = pd.to_datetime(df['date'])
 
     # Define the filtering condition
-    filtering_condition = df['DATE'] >= '2021-01-01'
+    filtering_condition = df['date'] >= '2021-01-01'
 
     # Apply the filter
     df_filtered = df[filtering_condition]
@@ -96,16 +110,16 @@ def filter_by_date(df):
 
 def filter_by_type(df):
     allowed_types = [0,1,2]
-    df_filtered = df[df['TYPE'].isin(allowed_types)]
+    df_filtered = df[df['type'].isin(allowed_types)]
     return df_filtered
 
 def filter_outliers(df):
     # Define filtering conditions
-    condition_complete = df['COMPLETE'] != 0
-    condition_year = (df['YEAR'] != 0) & (df['YEAR'] != '    ')
-    condition_rooms = (df['ROOMS'] > 0) & (df['ROOMS'] < 15)  # Assuming you want to exclude values equal to or greater than 15
-    condition_area = df['AREA'] <= 940
-    condition_price = (df['PRICE'] <= 500000) & (df['PRICE'] >= 7000)
+    condition_complete = df['complete'] != 0
+    condition_year = (df['year'] != 0) & (df['year'] != '    ')
+    condition_rooms = (df['rooms'] > 0) & (df['rooms'] < 15)  # Assuming you want to exclude values equal to or greater than 15
+    condition_area = df['area'] <= 940
+    condition_price = (df['price'] <= 500000) & (df['price'] >= 7000)
 
     # Combine the conditions using bitwise AND (&)
     combined_condition = condition_complete & condition_year & condition_rooms & condition_area & condition_price
@@ -118,12 +132,12 @@ def filter_outliers(df):
 # Sort the DataFrame by 'PRICE' column
 def plot_price(df,type,number):
     if type=='top':
-        top_prices =  df['PRICE'].nlargest(number)
+        top_prices =  df['price'].nlargest(number)
         df_sorted = top_prices.sort_values().reset_index(drop=True)
         plt.plot(df_sorted)
 
     if type=='bottom':
-        bottom_prices =  df['PRICE'].nsmallest(number)
+        bottom_prices =  df['price'].nsmallest(number)
         df_sorted = bottom_prices.sort_values().reset_index(drop=True)
         plt.plot(df_sorted)
 
@@ -147,11 +161,11 @@ def plot_price(df,type,number):
 ##### UPLOAD TO FEATURE STORE (HOPSWORKS) #####
 
 def main():
-    icelandic_house_prices_df = pd.read_csv('Final_Project\data\kaupskra.csv', sep=';')
+    icelandic_house_prices_df = pd.read_csv('../data/kaupskra.csv', sep=';')
     ihp_df1 = feature_extraction(icelandic_house_prices_df)
     ihp_df1 = translate_columns(ihp_df1)
     ihp_df1 = data_cleaning(ihp_df1)
-    ihp_df1.to_csv('Final_Project/data/kaupskra_clean.csv')
+    ihp_df1.to_csv('../data/kaupskra_clean.csv')
     hopsworks_login_and_upload(ihp_df1)
     # display_data(ihp_df1)
     # plot_price(ihp_df1,'top',29233)
