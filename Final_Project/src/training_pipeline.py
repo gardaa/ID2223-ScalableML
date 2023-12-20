@@ -21,7 +21,7 @@ def login_and_create_feature_view():
     query = feature_group.select_all()
     feature_view = fs.get_or_create_feature_view(
         name="icelandic_house_prices", 
-        version=1,
+        version=8,
         description="Read from Icelandic house prices dataset",
         labels=["price"],
         query=query
