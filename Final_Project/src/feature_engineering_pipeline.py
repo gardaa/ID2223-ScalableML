@@ -11,7 +11,7 @@ def hopsworks_login_and_upload(df):
     icelandic_house_price_fg = fs.get_or_create_feature_group(
         name="Icelandic house prices",
         version=1,
-        primary_key=["POSTALCODE","DATE","PRICE","YEAR","AREA","ROOMS","TYPE"],
+        primary_key=["POSTALCODE","PRICE","YEAR","AREA","ROOMS","TYPE"],
         description="Icelandic house price dataset"
     )
 
@@ -52,9 +52,9 @@ def translate_columns(df):
 
 def translate_type(df):
     value_mapping = {
-        'Fjölbýli': 'Apartment',
-        'Sérbýli': 'Semi-detached',
-        'Einbýli': 'House'
+        'Fjölbýli': 0, # Apartment
+        'Sérbýli': 1, # Semi-detached
+        'Einbýli': 2 # House
     }
 
     df['TYPE'] = df['TYPE'].replace(value_mapping)
@@ -73,10 +73,12 @@ def data_cleaning(df):
 # 7. Filter out area bigger than 940 (largest private home in Iceland)
 # 8. Filter out price larger than 500 million or less than 7 million
     df = filter_outliers(df)
-# Drop COMPLETE column
-    df = df.drop('COMPLETE', axis=1)
+# Drop DATE and COMPLETE column
+    df = df.drop(['COMPLETE','DATE'], axis=1)
 # PRICE is in 1000s, at some point must multiply column by 1000
+    df['PRICE'] = df['PRICE'] * 1000
 # ROOMS is a double, consider changing to int
+    df['ROOMS'] = df['ROOMS'].astype(int)
     return df
 
 def filter_by_date(df):
@@ -93,7 +95,7 @@ def filter_by_date(df):
 
 
 def filter_by_type(df):
-    allowed_types = ['Apartment', 'Semi-detached', 'House']
+    allowed_types = [0,1,2]
     df_filtered = df[df['TYPE'].isin(allowed_types)]
     return df_filtered
 
@@ -125,10 +127,6 @@ def plot_price(df,type,number):
         df_sorted = bottom_prices.sort_values().reset_index(drop=True)
         plt.plot(df_sorted)
 
-    if type=='all':
-        df_sorted = df.sort_values(by='PRICE')
-        plt.plot(df_sorted['PRICE'])
-
     # Plot the 'PRICE' column
     # plt.plot(df_sorted)
 
@@ -154,7 +152,7 @@ def main():
     ihp_df1 = translate_columns(ihp_df1)
     ihp_df1 = data_cleaning(ihp_df1)
     ihp_df1.to_csv('Final_Project/data/kaupskra_clean.csv')
-    # hopsworks_login_and_upload(ihp_df1) NOT WORKING
+    hopsworks_login_and_upload(ihp_df1)
     # display_data(ihp_df1)
     # plot_price(ihp_df1,'top',29233)
 
