@@ -26,22 +26,6 @@ def login_and_create_feature_view():
         labels=["price"],
         query=query
     )
-    # query_train = feature_group.select(["postalcode", "year", "area", "rooms", "type"] )
-    # query_test = feature_group.select(["price"])
-    # feature_view_train = fs.get_or_create_feature_view(
-    #     name="icelandic_house_prices", 
-    #     version=1,
-    #     description="Read from Icelandic house prices dataset",
-    #     labels=["postalcode", "year", "area", "rooms", "type"],
-    #     query=query_train
-    # )
-    # feature_view_test = fs.get_or_create_feature_view(
-    #     name="icelandic_house_prices", 
-    #     version=1,
-    #     description="Read from Icelandic house prices dataset",
-    #     labels=["price"],
-    #     query=query_test
-    # )
 
     return feature_view
 
@@ -62,24 +46,6 @@ def main():
     X_train, X_test, y_train, y_test = feature_view.train_test_split(test_size=0.2)
     print("X_train:", X_train, "\nX_test:", X_test, "\ny_train:", y_train, "\ny_test:", y_test)
 
-    # categorical_features = []
-    # numeric_features = []
-    # for col in X_train.columns:
-    #     if X_train[col].dtype == object:
-    #         categorical_features.append(col)
-    #     else:
-    #         numeric_features.append(col)
-
-    # categorical_feature_ids = []
-    # numeric_feature_ids = []
-    # idx = 0
-    # for col in X_train.columns:
-    #     if X_train[col].dtype == object:
-    #         categorical_feature_ids.append(idx)
-    #     else:
-    #         numeric_feature_ids.append(idx)
-    #     idx += 1
-
     # A dictionary of models to train and later add corresponding RMSE scores to each model
     models_and_metrics = {
         "LinearRegression": LinearRegression(),
@@ -95,7 +61,7 @@ def main():
 
     # Iterate over the models and train them and evaluate them using cross-validation
     for name, model in models_and_metrics.items():
-        model.fit(X_train, y_train)
+        model.fit(X_train, y_train.values.ravel())
         scores = cross_val_score(model, X_train, y_train, cv=5, scoring='neg_mean_squared_error')
         rmse_scores = (scores * -1) ** 0.5  # Convert negative MSE to RMSE
         avg_rmse = rmse_scores.mean()
