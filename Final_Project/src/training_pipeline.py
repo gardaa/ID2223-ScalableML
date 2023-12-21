@@ -40,8 +40,8 @@ def model_selection(X_train, y_train):
         "MLPRegressor": MLPRegressor(),
         "KNeighborsRegressor": KNeighborsRegressor(),
         "ElasticNet": ElasticNet(),
-        "Lasso": Lasso(),
-        "Ridge": Ridge()
+        "Lasso": Lasso()
+        # "Ridge": Ridge()
     }
 
     # Iterate over the models and train them and evaluate them using cross-validation
@@ -67,6 +67,7 @@ def model_selection(X_train, y_train):
 
 def tune_best_models(best_models, X_val, y_val):
     # Parameter grid for random forest
+    # Best hyperparameters: {'max_depth': 10, 'max_features': 'auto', 'min_samples_leaf': 2, 'min_samples_split': 2, 'n_estimators': 50}
     random_forest_params = {
         'n_estimators': [50, 100, 200],
         'max_depth': [None, 10, 20, 30],
@@ -75,12 +76,14 @@ def tune_best_models(best_models, X_val, y_val):
         'max_features': ['auto', 'sqrt', 'log2']
     }
     # Parameter grid for KNN
+    # Best hyperparameters: {'n_neighbors': 10, 'p': 1, 'weights': 'distance'}
     knn_params = {
         'n_neighbors': [3, 5, 7, 10],
         'weights': ['uniform', 'distance'],
         'p': [1, 2]  # 1 for Manhattan distance, 2 for Euclidean distance
     }
     # Parameter grid for ElasticNet
+    # Not part of my top 3!
     elastic_net_params = {
         'alpha': [0.1, 0.5, 1.0],
         'l1_ratio': [0.1, 0.5, 0.9],
@@ -89,6 +92,7 @@ def tune_best_models(best_models, X_val, y_val):
     }
 
     # Dict to store the parameter grids for each model
+    # Must add DecisionTreeRegressor!
     model_param_dict = {"RandomForestRegressor": random_forest_params, "KNeighborsRegressor": knn_params, "ElasticNet": elastic_net_params}
 
     best_rmse = {}
@@ -106,9 +110,9 @@ def tune_best_models(best_models, X_val, y_val):
 
         # Print the best hyperparameters and corresponding RMSE, and append the RMSE to the list
         print("Best hyperparameters:", grid_search.best_params_)
-        best_rmse = (-grid_search.best_score_) ** 0.5
-        print("Best RMSE:", best_rmse, "\n")
-        best_rmse[model_name] = best_rmse
+        best_rmse_value = (-grid_search.best_score_) ** 0.5
+        print("Best RMSE:", best_rmse_value, "\n")
+        best_rmse[model_name] = best_rmse_value
         print(best_rmse)
     
     end_time = time.time()
