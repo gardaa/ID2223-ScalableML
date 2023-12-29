@@ -24,4 +24,4 @@ jobs:
         pip install pandas schedule requests
 
     - name: Run Script
-      run: python fetch-data-monthly.py
+      run: python Final_Project/src/fetch-data-monthly.py
