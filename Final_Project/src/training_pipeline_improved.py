@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import hopsworks
 from sklearn.model_selection import train_test_split
@@ -6,6 +7,8 @@ from sklearn.metrics import mean_squared_error
 from math import sqrt
 from sklearn.model_selection import GridSearchCV
 import joblib
+from hsml.schema import Schema
+from hsml.model_schema import ModelSchema
 
 # FETCH DATA FROM HOPSWORKS AS MODEL VIEW
 def login_and_create_feature_view():
@@ -29,14 +32,15 @@ def login_and_create_feature_view():
 
     return project, feature_view
 
-def split_train_test(csv_file_path):
-    df = pd.read_csv(csv_file_path)
+def split_train_test(feataure_view):
+    #df = pd.read_csv(csv_file_path)
     # Select features (X) and target variable (y)
-    X = df[['postalcode', 'year', 'area', 'rooms', 'type']]
-    y = df['price']
+    #X = df[['postalcode', 'year', 'area', 'rooms', 'type']]
+    #y = df['price']
 
     # Split the data into training and testing sets (80% train, 20% test)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    #X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    X_train, X_test, y_train, y_test = feature_view.train_test_split(test_size=0.2)
 
     return X_train, X_test, y_train, y_test
 
@@ -68,7 +72,7 @@ def train_random_forest(X_train, y_train):
 
     # Perform Grid Search Cross Validation to find the best hyperparameters
     grid_search = GridSearchCV(rf, param_grid, cv=5, scoring='neg_mean_squared_error')
-    grid_search.fit(X_train, y_train)
+    grid_search.fit(X_train, y_train.values.ravel())
     print("Best hyperparameters:", grid_search.best_params_)
 
     # Get the best model
@@ -83,18 +87,50 @@ def evaluate_model(model, X_test, y_test):
     # Calculate RMSE
     rmse = sqrt(mean_squared_error(y_test, y_pred))
     print(f'Root Mean Squared Error (RMSE): {rmse}')
+    return rmse
 
 def save_model(model, filename='random_forest_model.pkl'):
     # Save the model
     joblib.dump(model, filename)
     print(f'Model saved as {filename}')
 
+def upload_model_to_hopsworks(login, model, X_train, y_train, rmse_score):
+    # Get an object for model registry from Hopsworks
+    mr = login.get_model_registry()
+
+    # Create folder to store house_price prediction model if it does not exist
+    model_dir = "house_price_prediction_model"
+    if os.path.isdir(model_dir) == False:
+        os.mkdir(model_dir)
+
+    # Save model and conusfion matrix for rf to the correct folder. Both will be uploaded to model registry in Hopsworks
+    joblib.dump(model, model_dir + "/house_price_prediction_model.pkl")
+    #fig_rf.savefig(model_dir + "/confusion_matrix_rf.png")
+
+    # Specify schema of the model 
+    input_schema = Schema(X_train)
+    output_schema = Schema(y_train)
+    model_schema = ModelSchema(input_schema, output_schema)
+
+    # Create model in the model registry that includes the model name, metrics, schema and description
+    house_price_prediction_model = mr.python.create_model(
+        name="house_price_prediction_model",
+        metrics={"RMSE (Root Mean Squared Error):" : rmse_score},
+        model_schema=model_schema,
+        description="Icelandic house price prediction model"
+    )
+
+    # Upload model to model registry with all files in the folder
+    house_price_prediction_model.save(model_dir)
+    print("Model saved to local file and uploaded to Hopsworks!")
+
 # Example usage:
 # Assuming 'df' is your DataFrame
 # X_train, X_test, y_train, y_test = split_train_test(df)
 login, feature_view = login_and_create_feature_view()
-csv_file_path = 'Final_Project/data/kaupskra_clean.csv'
-X_train, X_test, y_train, y_test = split_train_test(csv_file_path)
+#csv_file_path = '../data/kaupskra_clean.csv'
+X_train, X_test, y_train, y_test = split_train_test(feature_view)
 best_rf_model = train_random_forest(X_train, y_train)
-evaluate_model(best_rf_model, X_test, y_test)
-save_model(best_rf_model, 'local_random_forest_model.pkl')
+rmse_score = evaluate_model(best_rf_model, X_test, y_test)
+#save_model(best_rf_model, 'local_random_forest_model.pkl')
+upload_model_to_hopsworks(login, best_rf_model, X_train, y_train, rmse_score)
