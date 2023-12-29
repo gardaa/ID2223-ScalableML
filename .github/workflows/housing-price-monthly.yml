@@ -1,6 +1,7 @@
 name: housing-price-feature-monthly
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: '* * * * *'
     # - cron: '0 0 23 * *'
