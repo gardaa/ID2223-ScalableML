@@ -21,7 +21,7 @@ def fetch_update_csv():
         current_dir = os.getcwd()
 
         # Save the DataFrame to a local CSV file in the GitHub repository
-        local_file_path = os.path.join(current_dir, 'kaupskra.csv')
+        local_file_path = os.path.join(current_dir, 'kaupskra1.csv')
         df.to_csv(local_file_path, index=False)
 
         print(f"CSV file updated successfully at {datetime.now()}")
