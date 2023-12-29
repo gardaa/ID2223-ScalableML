@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 # Login to Hopsworks and get the feature store handle
 def hopsworks_login_and_upload(df):
-    HOPSWORKS_API_KEY = "PLACE API KEY HERE"
+    HOPSWORKS_API_KEY = "zB1HFw6waUQEsgoH.zTP79bPsYXZzR1hZN8L5lF7NJmgIJNR6ji7r4HenjkeeSel2MVi6Ca61AbrzGOy8"
     project = hopsworks.login(api_key_value=HOPSWORKS_API_KEY)
     fs = project.get_feature_store()
     try:
@@ -87,11 +87,14 @@ def data_cleaning(df):
     df['price'] = df['price'] * 1000
 # Change all columns to int to fix error
     df['rooms'] = df['rooms'].astype(int)
-    df['type'] = df['type'].astype(int)
-    df['postalcode'] = df['postalcode'].astype(int)
+    df['type'] = df['type'].astype(str)
+    df['postalcode'] = df['postalcode'].astype(str)
     df['year'] = df['year'].astype(int)
     df['area'] = df['area'].astype(int)
     df['price'] = df['price'].astype(int)
+# Define categorical values
+    df['postalcode'] = pd.Categorical(df['postalcode'])
+    df['type'] = pd.Categorical(df['type'])
 
     return df
 
@@ -117,7 +120,7 @@ def filter_outliers(df):
     # Define filtering conditions
     condition_complete = df['complete'] != 0
     condition_year = (df['year'] != 0) & (df['year'] != '    ')
-    condition_rooms = (df['rooms'] > 0) & (df['rooms'] < 15)  # Assuming you want to exclude values equal to or greater than 15
+    condition_rooms = (df['rooms'] > 0) & (df['rooms'] < 15)
     condition_area = df['area'] <= 940
     condition_price = (df['price'] <= 500000) & (df['price'] >= 7000)
 
@@ -161,11 +164,11 @@ def plot_price(df,type,number):
 ##### UPLOAD TO FEATURE STORE (HOPSWORKS) #####
 
 def main():
-    icelandic_house_prices_df = pd.read_csv('../data/kaupskra.csv', sep=';')
+    icelandic_house_prices_df = pd.read_csv('Final_Project/data/kaupskra.csv', sep=';')
     ihp_df1 = feature_extraction(icelandic_house_prices_df)
     ihp_df1 = translate_columns(ihp_df1)
     ihp_df1 = data_cleaning(ihp_df1)
-    ihp_df1.to_csv('../data/kaupskra_clean.csv')
+    ihp_df1.to_csv('Final_Project/data/kaupskra_clean.csv')
     hopsworks_login_and_upload(ihp_df1)
     # display_data(ihp_df1)
     # plot_price(ihp_df1,'top',29233)

@@ -11,6 +11,7 @@ from sklearn.svm import SVR
 from sklearn.tree import DecisionTreeRegressor
 from hsml.schema import Schema
 from hsml.model_schema import ModelSchema
+import hsfs
 
 
 # FETCH DATA FROM HOPSWORKS AS MODEL VIEW
@@ -18,14 +19,18 @@ def login_and_create_feature_view():
     #Log in to Hopsworks
     HOPSWORKS_API_KEY = "zB1HFw6waUQEsgoH.zTP79bPsYXZzR1hZN8L5lF7NJmgIJNR6ji7r4HenjkeeSel2MVi6Ca61AbrzGOy8"
     project = hopsworks.login(api_key_value=HOPSWORKS_API_KEY)
+    # connection = hsfs.connection()
     fs = project.get_feature_store()
-
+    # fs = connection.get_feature_store(name='assignment1_featurestore')
+    
     # Get feature view
+    # feature_group = fs.get_feature_group('icelandic_house_prices', version=1)
     feature_group = fs.get_feature_group(name="icelandic_house_prices", version=1)
     query = feature_group.select_all()
     feature_view = fs.get_or_create_feature_view(
+    # feature_view = fs.create_feature_view(
         name="icelandic_house_prices", 
-        version=8,
+        version=9,
         description="Read from Icelandic house prices dataset",
         labels=["price"],
         query=query
@@ -36,15 +41,15 @@ def login_and_create_feature_view():
 def model_selection(X_train, y_train):
     # A dictionary of models to train and later add corresponding RMSE scores to each model
     models_and_metrics = {
-        "LinearRegression": LinearRegression(),
+        # "LinearRegression": LinearRegression(),
         "DecisionTreeRegressor": DecisionTreeRegressor(),
         "RandomForestRegressor": RandomForestRegressor(),
-        "SVR": SVR(),
-        "MLPRegressor": MLPRegressor(),
+        # "SVR": SVR(),
+        # "MLPRegressor": MLPRegressor(),
         "KNeighborsRegressor": KNeighborsRegressor(),
-        "ElasticNet": ElasticNet(),
-        "Lasso": Lasso(),
-        "Ridge": Ridge()
+        # "ElasticNet": ElasticNet(),
+        # "Lasso": Lasso(),
+        # "Ridge": Ridge()
     }
 
     # Iterate over the models and train them and evaluate them using cross-validation
@@ -72,19 +77,27 @@ def tune_best_models(best_models, X_val, y_val):
     # Parameter grid for random forest
     # Best hyperparameters: {'max_depth': 10, 'max_features': 'auto', 'min_samples_leaf': 2, 'min_samples_split': 2, 'n_estimators': 50}
     random_forest_params = {
-        'n_estimators': [50, 100, 200],
-        'max_depth': [None, 10, 20, 30],
-        'min_samples_split': [2, 5, 10],
-        'min_samples_leaf': [1, 2, 4],
-        'max_features': ['auto', 'sqrt', 'log2']
+        'n_estimators': [40, 50,60, 75],
+        # 'max_depth': [None, 10, 20, 30],
+        # 'min_samples_split': [2, 5, 10],
+        # 'min_samples_leaf': [1, 2, 4],
+        'max_depth': [10],
+        'min_samples_split': [2],
+        'min_samples_leaf': [2],
+        'max_features': ['auto'],
+        'bootstrap': [True, False]
     }
 
     # Parameter grid for KNN
     # Best hyperparameters: {'n_neighbors': 10, 'p': 1, 'weights': 'distance'}
     knn_params = {
-        'n_neighbors': [3, 5, 7, 10],
-        'weights': ['uniform', 'distance'],
-        'p': [1, 2]  # 1 for Manhattan distance, 2 for Euclidean distance
+        # 'n_neighbors': [3, 5, 7, 10],
+        # 'weights': ['uniform', 'distance'],
+        # 'p': [1, 2]  # 1 for Manhattan distance, 2 for Euclidean distance
+        'n_neighbors': [17, 19, 21, 30],
+        'weights': ['distance'],
+        'algorithm': ['brute'],
+        'p': [1]  # 1 for Manhattan distance, 2 for Euclidean distance
     }
 
     # Parameter grid for ElasticNet
@@ -96,13 +109,19 @@ def tune_best_models(best_models, X_val, y_val):
     }
 
     # Parameter grid for decision trees
+    # DecisionTreeRegressor(max_depth=10, max_features='auto', min_samples_leaf=2, min_samples_split=10, random_state=42, 'splitter': 'best')
     decision_trees_params = {
-        'splitter': ['best', 'random'],       # The strategy used to choose the split at each node
-        'max_depth': [None, 10, 20, 30],       # Maximum depth of the tree
-        'min_samples_split': [2, 5, 10],       # Minimum number of samples required to split an internal node
-        'min_samples_leaf': [1, 2, 4],         # Minimum number of samples required to be at a leaf node
-        'max_features': ['auto', 'sqrt', 'log2', None],  # Number of features to consider for the best split
+        # 'splitter': ['best', 'random'],       # The strategy used to choose the split at each node
+        # 'max_depth': [None, 10, 20, 30],       # Maximum depth of the tree
+        # 'min_samples_split': [2, 5, 10],       # Minimum number of samples required to split an internal node
+        # 'min_samples_leaf': [1, 2, 4],         # Minimum number of samples required to be at a leaf node
+        # 'max_features': ['auto', 'sqrt', 'log2', None],  # Number of features to consider for the best split
         'random_state': [42],
+        'splitter': ['best'],       # The strategy used to choose the split at each node
+        'max_depth': [10],       # Maximum depth of the tree
+        'min_samples_split': [15],       # Minimum number of samples required to split an internal node
+        'min_samples_leaf': [2],         # Minimum number of samples required to be at a leaf node
+        'max_features': ['auto'],  # Number of features to consider for the best split
     }
 
     # Dict to store the parameter grids for each model
@@ -164,11 +183,11 @@ def upload_model(login, model, X_train, y_train, rmse_score):
         name="house_price_prediction_model",
         metrics={"RMSE (Root Mean Squared Error):" : rmse_score},
         model_schema=model_schema,
-        description="Islance house price prediction model"
+        description="Icelandic house price prediction model"
     )
 
     # Upload model to model registry with all files in the folder
-    house_price_prediction_model.save(model_dir)
+    # house_price_prediction_model.save(model_dir)
     print("Model saved to file and uploaded to Hopsworks!")
 
 def main():
@@ -180,12 +199,17 @@ def main():
 
     # Train and evaluate models on training data
     best_models = model_selection(X_train, y_train)
+    # best_models = 
 
     # Tune the best model on test data
-    best_model_tuned, best_rmse_score = tune_best_models(best_models, X_test, y_test)
+    best_model_tuned, best_rmse_score = tune_best_models(best_models, X_train, y_train)
 
     # Upload the best model to Hopsworks
     upload_model(login, best_model_tuned, X_train, y_train, best_rmse_score)
 
 if __name__ == "__main__":
     main()
+
+# Average RMSE for RandomForestRegressor : 16415492.815483168
+# Average RMSE for DecisionTreeRegressor : 21600050.441506177
+# Average RMSE for KNeighborsRegressor : 18098994.24726366
