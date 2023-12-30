@@ -52,7 +52,7 @@ def login_and_create_feature_view():
 
     return project, feature_view
 
-def split_train_test(feataure_view):
+def split_train_test(feature_view):
     #df = pd.read_csv(csv_file_path)
     # Select features (X) and target variable (y)
     #X = df[['postalcode', 'year', 'area', 'rooms', 'type']]
