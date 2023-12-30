@@ -24,17 +24,33 @@ jobs:
       run: |
         pip install pandas schedule requests
 
-    - name: Run Script
+    - name: Run 'fetch-data-monthly'
       run: python Final_Project/src/fetch-data-monthly.py
 
-    - name: commit files
+    - name: Commit new registry
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git add -A
         git diff-index --quiet HEAD || (git commit -a -m "Monthly automatic update of the registry" --allow-empty)
         
-    - name: push changes
+    - name: Push changes
+      uses: ad-m/github-push-action@v0.6.0
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: main 
+
+    - name: Run 'feature_engineering_pipeline'
+      run: python Final_Project/src/feature_engineering_pipeline.py
+
+    - name: Commit clean registry
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add -A
+        git diff-index --quiet HEAD || (git commit -a -m "Monthly automatic update of the registry" --allow-empty)
+
+    - name: Push changes
       uses: ad-m/github-push-action@v0.6.0
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
