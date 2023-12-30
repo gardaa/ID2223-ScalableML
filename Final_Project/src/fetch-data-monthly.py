@@ -15,12 +15,15 @@ def fetch_update_csv():
         # Load the CSV data into a DataFrame
         df = pd.read_csv(StringIO(response.text))
 
+        # Specify the desired path in your GitHub repository
+        relative_path = 'Final_Project/data'
+        
         # Get the current working directory
         current_dir = os.getcwd()
 
-        # Save the DataFrame to a local CSV file in the GitHub repository
-        local_file_path = os.path.join(current_dir, 'kaupskra.csv')
-        df.to_csv(local_file_path, index=False)
+        # Save the DataFrame to a local CSV file in the specified path
+        path = os.path.join(current_dir, relative_path, 'kaupskra.csv')
+        df.to_csv(path, index=False)
 
         print(f"CSV file updated successfully at {datetime.now()}")
 
