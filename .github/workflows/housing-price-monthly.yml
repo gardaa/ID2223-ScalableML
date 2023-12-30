@@ -3,8 +3,7 @@ name: housing-price-feature-monthly
 on:
   workflow_dispatch:
   schedule:
-    - cron: '* * * * *'
-    # - cron: '0 0 23 * *'
+    - cron: '0 0 23 * *'
 permissions:
   contents: write
 
@@ -33,7 +32,7 @@ jobs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git add -A
-        git diff-index --quiet HEAD || (git commit -a -m "updated logs" --allow-empty)
+        git diff-index --quiet HEAD || (git commit -a -m "Monthly automatic update of the registry" --allow-empty)
         
     - name: push changes
       uses: ad-m/github-push-action@v0.6.0
