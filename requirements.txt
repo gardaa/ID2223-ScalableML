@@ -2,3 +2,4 @@ pandas
 schedule 
 requests
 hopsworks
+matplotlib
