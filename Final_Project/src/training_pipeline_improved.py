@@ -9,6 +9,26 @@ from sklearn.model_selection import GridSearchCV
 import joblib
 from hsml.schema import Schema
 from hsml.model_schema import ModelSchema
+import time
+from datetime import datetime
+
+def confirm_data_upload():
+    # Wait for the upload to complete or until a specific condition is met
+    max_wait_time_seconds = 600  # Adjust the maximum wait time as needed
+    wait_interval_seconds = 10  # Adjust the interval between checks as needed
+
+    wait_start_time = time.time()
+
+    while (not os.path.exists('upload_complete.txt') or
+        datetime.now().strftime("%Y-%m") != open('upload_complete.txt', 'r').read().strip()[:7]) and \
+        (time.time() - wait_start_time) < max_wait_time_seconds:
+        time.sleep(wait_interval_seconds)
+
+    if os.path.exists('upload_complete.txt'):
+        # Fetch data from Hopsworks and proceed with training
+        print("Data upload confirmed. Proceeding with training.")
+    else:
+        print("Data upload confirmation timed out or month mismatch. Exiting without training.")
 
 # FETCH DATA FROM HOPSWORKS AS MODEL VIEW
 def login_and_create_feature_view():
@@ -124,13 +144,14 @@ def upload_model_to_hopsworks(login, model, X_train, y_train, rmse_score):
     house_price_prediction_model.save(model_dir)
     print("Model saved to local file and uploaded to Hopsworks!")
 
-# Example usage:
-# Assuming 'df' is your DataFrame
-# X_train, X_test, y_train, y_test = split_train_test(df)
-login, feature_view = login_and_create_feature_view()
-#csv_file_path = '../data/kaupskra_clean.csv'
-X_train, X_test, y_train, y_test = split_train_test(feature_view)
-best_rf_model = train_random_forest(X_train, y_train)
-rmse_score = evaluate_model(best_rf_model, X_test, y_test)
-#save_model(best_rf_model, 'local_random_forest_model.pkl')
-upload_model_to_hopsworks(login, best_rf_model, X_train, y_train, rmse_score)
+def main():
+    confirm_data_upload()
+    login, feature_view = login_and_create_feature_view()
+    #csv_file_path = '../data/kaupskra_clean.csv'
+    X_train, X_test, y_train, y_test = split_train_test(feature_view)
+    best_rf_model = train_random_forest(X_train, y_train)
+    rmse_score = evaluate_model(best_rf_model, X_test, y_test)
+    #save_model(best_rf_model, 'local_random_forest_model.pkl')
+    upload_model_to_hopsworks(login, best_rf_model, X_train, y_train, rmse_score)
+
+main()

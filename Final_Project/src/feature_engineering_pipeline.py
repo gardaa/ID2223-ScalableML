@@ -2,6 +2,7 @@ import pandas as pd
 import hopsworks
 from IPython.display import display
 import matplotlib.pyplot as plt
+from datetime import datetime
 
 # Login to Hopsworks and get the feature store handle
 def hopsworks_login_and_upload(df):
@@ -155,13 +156,11 @@ def plot_price(df,type,number):
     # Show the plot
     plt.show()
 
-##### EXPLORATORY DATA ANALYSIS (EDA) #####
 
-##### DATA PREPROCESSING #####
-
-##### FEATURE ENGINEERING #####
-
-##### UPLOAD TO FEATURE STORE (HOPSWORKS) #####
+def timestamp_update():
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    with open('upload_complete.txt', 'w') as complete_file:
+        complete_file.write(timestamp)
 
 def main():
     icelandic_house_prices_df = pd.read_csv('Final_Project/data/kaupskra.csv', sep=';')
@@ -170,6 +169,7 @@ def main():
     ihp_df1 = data_cleaning(ihp_df1)
     ihp_df1.to_csv('Final_Project/data/kaupskra_clean.csv')
     hopsworks_login_and_upload(ihp_df1)
+    timestamp_update()
     # display_data(ihp_df1)
     # plot_price(ihp_df1,'top',29233)
 
