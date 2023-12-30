@@ -5,6 +5,8 @@ on:
   schedule:
     - cron: '* * * * *'
     # - cron: '0 0 23 * *'
+permissions:
+  contents: write
 
 jobs:
   update-csv :
