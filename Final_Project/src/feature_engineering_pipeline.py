@@ -17,7 +17,7 @@ def hopsworks_login_and_upload(df):
             description="icelandic house price dataset"
         )
 
-        icelandic_house_price_fg.insert(df)
+        icelandic_house_price_fg.insert(df, overwrite=True)
 
         print("Feature group created/loaded and data inserted successfully")
 
