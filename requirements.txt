@@ -3,7 +3,7 @@ schedule
 requests
 hopsworks
 matplotlib
-sklearn
+scikit-learn
 math
 joblib
 time
